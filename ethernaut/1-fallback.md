@@ -1,3 +1,4 @@
+# 1. Fallback
 # Scope
 This report covers the analysis of the Ethernaut level "Fallback".
 The goal of the challenge is to identify and exploit a vulnerability in the provided contract in order to claim ownership of the contract and reduce its balance to 0.
